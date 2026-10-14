@@ -1,0 +1,367 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>嘿嘿哥刷课 · 在线下单</title>
+<style>
+  :root{
+    --blue: #4a9eff;
+    --blue-light: #e8f3ff;
+    --blue-deep: #2f7de1;
+    --mint: #7fd8be;
+    --ink: #2b3a4a;
+    --ink-soft: #6b7c8c;
+    --card: #ffffff;
+    --bg: #f5faff;
+    --radius: 18px;
+    --shadow: 0 6px 24px rgba(74,158,255,.12);
+  }
+  *{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+  body{
+    font-family:"PingFang SC","Microsoft YaHei","Hiragino Sans GB",sans-serif;
+    background:var(--bg);
+    color:var(--ink);
+    min-height:100vh;
+    padding:16px 14px 40px;
+    background-image:
+      radial-gradient(circle at 12% 8%, rgba(127,216,190,.18) 0, transparent 40%),
+      radial-gradient(circle at 88% 4%, rgba(74,158,255,.15) 0, transparent 45%),
+      radial-gradient(circle at 50% 100%, rgba(127,216,190,.12) 0, transparent 50%);
+  }
+  .wrap{max-width:520px;margin:0 auto}
+
+  /* ===== 顶部 ===== */
+  .hero{text-align:center;padding:26px 0 18px}
+  .avatar{
+    width:84px;height:84px;border-radius:28px;margin:0 auto 12px;
+    background:linear-gradient(135deg,#4a9eff 0%,#7fd8be 100%);
+    display:flex;align-items:center;justify-content:center;
+    box-shadow:0 10px 28px rgba(74,158,255,.35);
+    font-size:44px;
+    transform:rotate(-4deg);
+  }
+  .hero h1{font-size:24px;letter-spacing:1px}
+  .hero h1 .accent{color:var(--blue)}
+  .tagline{
+    display:inline-flex;align-items:center;gap:6px;
+    margin-top:10px;padding:5px 14px;border-radius:999px;
+    background:var(--blue-light);color:var(--blue-deep);
+    font-size:12.5px;font-weight:600;
+  }
+
+  /* ===== 卡片 ===== */
+  .card{
+    background:var(--card);border-radius:var(--radius);
+    box-shadow:var(--shadow);padding:22px 20px;margin-bottom:16px;
+    border:1.5px solid rgba(74,158,255,.10);
+  }
+  .card-title{
+    display:flex;align-items:center;gap:8px;font-size:16px;font-weight:700;
+    margin-bottom:16px;
+  }
+  .card-title .num{
+    width:26px;height:26px;border-radius:9px;flex:none;
+    background:linear-gradient(135deg,var(--blue),var(--blue-deep));color:#fff;
+    display:flex;align-items:center;justify-content:center;font-size:13px;
+    box-shadow:0 4px 10px rgba(47,125,225,.3);
+  }
+
+  label{display:block;font-size:13px;color:var(--ink-soft);font-weight:600;margin-bottom:6px}
+  label .req{color:#ff6b6b}
+  input,textarea{
+    width:100%;border:2px solid #e3edf7;border-radius:12px;
+    padding:11px 13px;font-size:15px;color:var(--ink);
+    background:#fbfdff;outline:none;transition:.2s;
+    font-family:inherit;
+  }
+  input:focus,textarea:focus{border-color:var(--blue);background:#fff;box-shadow:0 0 0 4px rgba(74,158,255,.10)}
+  input::placeholder,textarea::placeholder{color:#b7c6d4}
+  textarea{min-height:88px;resize:vertical;line-height:1.6}
+  .field{margin-bottom:15px}
+  .field:last-child{margin-bottom:0}
+  .hint{font-size:11.5px;color:#9aabb8;margin-top:5px;line-height:1.5}
+  .hint warn{color:#ff8f3c;font-weight:600}
+
+  /* 科目动态行 */
+  .subj-row{display:flex;gap:8px;margin-bottom:8px;align-items:center}
+  .subj-row input{flex:1}
+  .subj-add{
+    width:40px;height:40px;flex:none;border:none;border-radius:12px;
+    background:var(--blue-light);color:var(--blue-deep);font-size:20px;font-weight:700;
+    cursor:pointer;transition:.2s;
+  }
+  .subj-add:hover{background:var(--blue);color:#fff}
+  .subj-del{
+    width:32px;height:32px;flex:none;border:none;border-radius:10px;
+    background:#fff0f0;color:#ff6b6b;font-size:15px;cursor:pointer;transition:.2s;
+  }
+  .subj-del:hover{background:#ff6b6b;color:#fff}
+  #subjWrap .subj-row:first-child .subj-del{display:none}
+
+  /* 复选 */
+  .agree{display:flex;gap:8px;align-items:flex-start;font-size:12.5px;color:var(--ink-soft);line-height:1.6;cursor:pointer}
+  .agree input{width:17px;height:17px;flex:none;margin-top:1px;accent-color:var(--blue)}
+
+  /* 主按钮 */
+  .btn-main{
+    width:100%;border:none;border-radius:14px;padding:15px;
+    font-size:17px;font-weight:800;letter-spacing:2px;color:#fff;cursor:pointer;
+    background:linear-gradient(135deg,#4a9eff 0%,#2f7de1 100%);
+    box-shadow:0 8px 20px rgba(47,125,225,.35);
+    transition:.2s;
+  }
+  .btn-main:hover{transform:translateY(-2px);box-shadow:0 12px 26px rgba(47,125,225,.42)}
+  .btn-main:active{transform:translateY(0)}
+  .btn-main:disabled{background:#b9cfe6;box-shadow:none;cursor:not-allowed;transform:none}
+
+  /* 价格说明表 */
+  .price-table{width:100%;border-collapse:collapse;font-size:13px}
+  .price-table th{
+    text-align:left;padding:8px 10px;color:#fff;font-weight:600;
+    background:linear-gradient(135deg,var(--blue),var(--blue-deep));
+  }
+  .price-table th:first-child{border-radius:10px 0 0 10px}
+  .price-table th:last-child{border-radius:0 10px 10px 0}
+  .price-table td{padding:9px 10px;border-bottom:1px dashed #dcebf9}
+  .price-table tr:last-child td{border-bottom:none}
+  .price-bang{color:var(--blue-deep);font-weight:800;font-size:16px}
+  .price-old{text-decoration:line-through;color:#b0c2d2;font-size:11.5px}
+
+  /* 注意事项 */
+  .rules li{
+    list-style:none;display:flex;gap:8px;font-size:12.8px;color:var(--ink-soft);
+    line-height:1.7;margin-bottom:9px;
+  }
+  .rules li:last-child{margin-bottom:0}
+  .rules .ico{flex:none;font-size:14px}
+
+  /* ===== 弹窗 ===== */
+  .mask{
+    position:fixed;inset:0;background:rgba(31,52,74,.45);backdrop-filter:blur(6px);
+    display:flex;align-items:center;justify-content:center;z-index:99;
+    opacity:0;pointer-events:none;transition:.25s;padding:18px;
+  }
+  .mask.show{opacity:1;pointer-events:auto}
+  .modal{
+    background:rgba(255,255,255,.92);backdrop-filter:blur(14px);
+    border-radius:22px;padding:26px 22px;width:100%;max-width:400px;
+    box-shadow:0 20px 60px rgba(31,52,74,.35);
+    transform:translateY(24px) scale(.96);transition:.25s;
+    border:1.5px solid rgba(255,255,255,.8);
+  }
+  .mask.show .modal{transform:none}
+  .modal .check{
+    width:64px;height:64px;border-radius:50%;margin:0 auto 14px;
+    background:linear-gradient(135deg,#7fd8be,#4acfa5);
+    display:flex;align-items:center;justify-content:center;font-size:32px;
+    box-shadow:0 8px 24px rgba(74,207,165,.4);
+  }
+  .modal h3{text-align:center;font-size:19px;margin-bottom:8px}
+  .modal .sub{text-align:center;font-size:12.5px;color:var(--ink-soft);margin-bottom:18px;line-height:1.6}
+  .order-box{
+    background:#f4faff;border:2px dashed var(--blue);border-radius:14px;
+    padding:14px;font-size:14.5px;line-height:1.8;font-weight:600;
+    color:var(--ink);word-break:break-all;margin-bottom:18px;
+    max-height:220px;overflow:auto;
+  }
+  .modal .btns{display:flex;gap:10px}
+  .btn-copy{
+    flex:1;border:none;border-radius:12px;padding:13px;
+    background:linear-gradient(135deg,#4a9eff,#2f7de1);color:#fff;
+    font-size:15px;font-weight:700;cursor:pointer;letter-spacing:1px;
+    box-shadow:0 6px 16px rgba(47,125,225,.35);transition:.2s;
+  }
+  .btn-copy:hover{transform:translateY(-1px)}
+  .btn-ghost{
+    flex:none;border:2px solid #d8e7f5;background:#fff;border-radius:12px;
+    padding:13px 18px;color:var(--ink-soft);font-size:14px;font-weight:600;cursor:pointer;
+  }
+  .modal .copied-tip{text-align:center;margin-top:10px;font-size:12px;color:#4acfa5;font-weight:600;opacity:0;transition:.3s}
+  .modal .copied-tip.show{opacity:1}
+
+  footer{
+    text-align:center;color:#a8bacbow 8;font-size:11.5px;padding-top:8px;line-height:1.8;
+    color:#a8bac8;
+  }
+  footer .heart{color:#ff8f8f}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <!-- 顶部 -->
+  <div class="hero">
+    <div class="avatar">🧑‍🎓</div>
+    <h1>嘿嘿哥<span class="accent">刷课</span></h1>
+    <div class="tagline">⚡ 全网低价 · 0.1元/门 · 为爱发电 💗</div>
+  </div>
+
+  <!-- 价格 -->
+  <div class="card">
+    <div class="card-title"><span class="num">💰</span>价格说明</div>
+    <table class="price-table">
+      <tr><th>业务</th><th>价格</th><th>状态</th></tr>
+      <tr>
+        <td>学习通刷课（全包）</td>
+        <td><span class="price-bang">0.1元/门</span><br><span class="price-old">原价2元/门</span></td>
+        <td>✅ 接单中</td>
+      </tr>
+    </table>
+    <div class="hint" style="margin-top:12px">全包=视频+章节测试+考试全覆盖，仿真人速度跑课，平均1天1门，多门课会依次进行。</div>
+  </div>
+
+  <!-- 下单表单 -->
+  <div class="card">
+    <div class="card-title"><span class="num">📝</span>填写下单信息</div>
+
+    <div class="field">
+      <label>学习通账号（手机号）<span class="req">*</span></label>
+      <input id="phone" type="tel" maxlength="15" placeholder="如：18812345678">
+      <div class="hint">⚠️ 请填手机号账号，<b>不是学号</b></div>
+    </div>
+
+    <div class="field">
+      <label>学习通密码<span class="req">*</span></label>
+      <input id="pwd" type="text" placeholder="请输入密码（注意大小写）">
+      <div class="hint">❗ 密码请先在学习通App上试过、能登录再填，避免耽误双方时间～</div>
+    </div>
+
+    <div class="field">
+      <label>要刷的科目<span class="req">*</span></label>
+      <div id="subjWrap">
+        <div class="subj-row">
+          <input type="text" class="subj-input" placeholder="如：创新思维训练">
+          <button class="subj-del" type="button" onclick="delSubj(this)">✕</button>
+        </div>
+      </div>
+      <button class="subj-add" type="button" onclick="addSubj()">＋</button>
+      <div class="hint">💡 每行1个科目，点＋加科目。科目名请尽量和学习通里的课程名一致</div>
+    </div>
+
+    <div class="field">
+      <label class="agree"><input type="checkbox" id="agree">
+        <span>我确认账号密码无误、科目名正确，理解刷课需1-7天完成，中途<b>不要自己看视频</b>（会干扰进度）。<span class="req">*</span></span>
+      </label>
+    </div>
+
+    <button class="btn-main" id="btnGen" onclick="genOrder()">生成下单信息</button>
+  </div>
+
+  <!-- 注意事项 -->
+  <div class="card">
+    <div class="card-title"><span class="num">📢</span>下单必读</div>
+    <ul class="rules">
+      <li><span class="ico">✅</span><span><b>发账号密码前先自查：</b>账号用手机号、密码能正常登录学习通App</span></li>
+      <li><span class="ico">🎮</span><span><b>刷课期间不要登录刷视频</b>（防清进度），等通知完成即可</span></li>
+      <li><span class="ico">⏱️</span><span><b>到账时间：</b>平均1门/天，多门依次进行，着急请提前下单</span></li>
+      <li><span class="ico">💬</span><span><b>售后：</b>有问题联系我</span></li>
+    </ul>
+  </div>
+
+  <footer>
+    嘿嘿哥刷课 · 为爱发电 <span class="heart">💗</span><br>
+    服务时间：全天接单 · 完成后微信通知
+  </footer>
+</div>
+
+<!-- 成功弹窗 -->
+<div class="mask" id="mask">
+  <div class="modal">
+    <div class="check">🎉</div>
+    <h3>下单信息已生成</h3>
+    <div class="sub">点击「复制」后，发送给<b>嘿嘿哥微信</b>即可完成下单</div>
+    <div class="order-box" id="orderText"></div>
+    <div class="btns">
+      <button class="btn-ghost" onclick="closeModal()">返回修改</button>
+      <button class="btn-copy" id="btnCopy" onclick="copyOrder()">📋 复制并发送给嘿嘿哥</button>
+    </div>
+    <div class="copied-tip" id="copyTip">✓ 已复制到剪贴板，去微信粘贴发送吧～</div>
+  </div>
+</div>
+
+<script>
+  // 科目行操作
+  function addSubj(){
+    const wrap = document.getElementById('subjWrap');
+    const row = document.createElement('div');
+    row.className = 'subj-row';
+    row.innerHTML = '<input type="text" class="subj-input" placeholder="如：广告学概论"><button class="subj-del" type="button" onclick="delSubj(this)">✕</button>';
+    wrap.appendChild(row);
+    row.querySelector('input').focus();
+  }
+  function delSubj(btn){
+    const wrap = document.getElementById('subjWrap');
+    if(wrap.children.length > 1){ btn.closest('.subj-row').remove(); }
+  }
+
+  // 生成订单
+  function genOrder(){
+    const phone = document.getElementById('phone').value.trim();
+    const pwd = document.getElementById('pwd').value.trim();
+    const agree = document.getElementById('agree').checked;
+
+    // 校验
+    if(!phone){ toast('请填写学习通账号（手机号）'); return; }
+    if(!/^1\d{10}$/.test(phone) && phone.length < 5){ toast('账号格式好像不太对，请检查一下'); return; }
+    if(!pwd){ toast('请填写学习通密码'); return; }
+    if(pwd.includes(' ')){ toast('密码里不能有空格哦'); return; }
+
+    const subjs = [...document.querySelectorAll('.subj-input')]
+      .map(i => i.value.trim()).filter(Boolean);
+    if(subjs.length === 0){ toast('请至少填写1个科目'); return; }
+    if(!agree){ toast('请先勾选确认事项'); return; }
+
+    // 组装标准格式：账号 密码 | 科目1、科目2
+    const orderText = phone + ' ' + pwd + ' | ' + subjs.join('、');
+    document.getElementById('orderText').textContent = orderText;
+    document.getElementById('mask').classList.add('show');
+    document.querySelector('.modal').scrollIntoView({behavior:'smooth', block:'center'});
+  }
+
+  function closeModal(){ document.getElementById('mask').classList.remove('show'); }
+
+  // 复制
+  function copyOrder(){
+    const text = document.getElementById('orderText').textContent;
+    if(navigator.clipboard && navigator.clipboard.writeText){
+      navigator.clipboard.writeText(text).then(showCopied).catch(()=>{
+        fallbackCopy(text); showCopied();
+      });
+    } else { fallbackCopy(text); showCopied(); }
+  }
+  function fallbackCopy(text){
+    const ta = document.createElement('textarea');
+    ta.value = text; ta.style.position='fixed'; ta.style.opacity='0';
+    document.body.appendChild(ta); ta.select();
+    try{ document.execCommand('copy'); }catch(e){}
+    ta.remove();
+  }
+  function showCopied(){
+    const tip = document.getElementById('copyTip');
+    tip.classList.add('show');
+    setTimeout(()=>tip.classList.remove('show'), 2500);
+  }
+
+  // 轻提示
+  function toast(msg){
+    let t = document.querySelector('.toast');
+    if(!t){
+      t = document.createElement('div');
+      t.className = 'toast';
+      t.style.cssText = 'position:fixed;left:50%;bottom:60px;transform:translateX(-50%);background:rgba(43,58,74,.88);color:#fff;padding:10px 20px;border-radius:12px;font-size:13.5px;z-index:120;opacity:0;transition:.3s;max-width:85%;text-align:center';
+      document.body.appendChild(t);
+    }
+    t.textContent = msg;
+    requestAnimationFrame(()=>{ t.style.opacity='1'; });
+    clearTimeout(t._timer);
+    t._timer = setTimeout(()=>{ t.style.opacity='0'; }, 2200);
+  }
+
+  // 点遮罩关闭
+  document.getElementById('mask').addEventListener('click', e=>{
+    if(e.target === e.currentTarget) closeModal();
+  });
+</script>
+</body>
+</html>
